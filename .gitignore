@@ -9,6 +9,7 @@ firebase-debug.*.log*
 
 # Firebase cache
 .firebase/
+.firestore-analysis.md
 
 # Firebase config
 

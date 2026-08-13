@@ -1,0 +1,148 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed data model
+    // ===============================================================
+    // users/{uid}/profile/account
+    //   name: string (1..60), email: string (0..254),
+    //   weekStart: "monday" | "sunday", updatedAt: timestamp
+    // users/{uid}/habits/{habitId}
+    //   name: string (1..50), icon: string (1..8), category: enum,
+    //   color: #RRGGBB, frequency: "daily" | "weekdays",
+    //   startDate: YYYY-MM-DD, goal: null | int (1..365), archived: bool,
+    //   createdAt: immutable timestamp, updatedAt: timestamp
+    // users/{uid}/habits/{habitId}/completions/{YYYY-MM-DD}
+    //   completed: true, completedAt: timestamp
+    // users/{uid}/notes/{noteId}
+    //   text: string (1..500), date: YYYY-MM-DD,
+    //   createdAt: immutable timestamp, updatedAt: timestamp
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner(data) {
+      return isAuthenticated() && (!('uid' in data) || data.uid == request.auth.uid);
+    }
+
+    function uidUnchanged(data) {
+      return !('uid' in data) || data.uid == request.auth.uid;
+    }
+
+    function uidNotModified(data) {
+      return !('uid' in data) || data.uid == resource.data.uid;
+    }
+
+    function hasProfile(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)/profile/account);
+    }
+
+    function validDate(value) {
+      return value is string && value.matches('^\\d{4}-\\d{2}-\\d{2}$');
+    }
+
+    function validProfile(data) {
+      return data.keys().hasAll(['name', 'email', 'weekStart', 'updatedAt'])
+        && data.keys().hasOnly(['name', 'email', 'weekStart', 'updatedAt'])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 60
+        && data.email is string && data.email.size() <= 254
+        && data.weekStart in ['monday', 'sunday']
+        && data.updatedAt is timestamp && data.updatedAt == request.time
+        && uidUnchanged(data) && isDocOwner(data);
+    }
+
+    function validHabit(data) {
+      return data.keys().hasAll(['name', 'icon', 'category', 'color', 'frequency', 'startDate', 'goal', 'archived', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['name', 'icon', 'category', 'color', 'frequency', 'startDate', 'goal', 'archived', 'createdAt', 'updatedAt'])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 50
+        && data.icon is string && data.icon.size() >= 1 && data.icon.size() <= 8
+        && data.category in ['Coding', 'Study', 'Fitness', 'Health', 'Productivity', 'Personal', 'Other']
+        && data.color is string && data.color.matches('^#[0-9a-fA-F]{6}$')
+        && data.frequency in ['daily', 'weekdays']
+        && validDate(data.startDate)
+        && (data.goal == null || (data.goal is int && data.goal >= 1 && data.goal <= 365))
+        && data.archived is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp && data.updatedAt == request.time
+        && uidUnchanged(data) && isDocOwner(data);
+    }
+
+    function validCompletion(data, completionId) {
+      return data.keys().hasAll(['completed', 'completedAt'])
+        && data.keys().hasOnly(['completed', 'completedAt'])
+        && validDate(completionId)
+        && data.completed is bool && data.completed == true
+        && data.completedAt is timestamp && data.completedAt == request.time
+        && uidUnchanged(data) && isDocOwner(data);
+    }
+
+    function validNote(data) {
+      return data.keys().hasAll(['text', 'date', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['text', 'date', 'createdAt', 'updatedAt'])
+        && data.text is string && data.text.size() >= 1 && data.text.size() <= 500
+        && validDate(data.date)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp && data.updatedAt == request.time
+        && uidUnchanged(data) && isDocOwner(data);
+    }
+
+    match /users/{userId} {
+      allow read, write: if false;
+
+      match /profile/{profileId} {
+        allow read: if profileId == 'account' && isOwner(userId);
+        allow create: if profileId == 'account' && isOwner(userId) && validProfile(request.resource.data);
+        allow update: if profileId == 'account' && isOwner(userId)
+          && validProfile(request.resource.data) && uidNotModified(request.resource.data);
+        allow delete: if false;
+      }
+
+      match /habits/{habitId} {
+        allow read: if isOwner(userId) && hasProfile(userId);
+        allow create: if isOwner(userId) && hasProfile(userId)
+          && validHabit(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if isOwner(userId) && hasProfile(userId)
+          && validHabit(request.resource.data)
+          && uidNotModified(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isOwner(userId) && hasProfile(userId);
+
+        match /completions/{completionId} {
+          allow read: if isOwner(userId) && hasProfile(userId)
+            && exists(/databases/$(database)/documents/users/$(userId)/habits/$(habitId));
+          allow create: if isOwner(userId) && hasProfile(userId)
+            && exists(/databases/$(database)/documents/users/$(userId)/habits/$(habitId))
+            && validCompletion(request.resource.data, completionId);
+          allow update: if isOwner(userId) && hasProfile(userId)
+            && exists(/databases/$(database)/documents/users/$(userId)/habits/$(habitId))
+            && validCompletion(request.resource.data, completionId)
+            && uidNotModified(request.resource.data);
+          allow delete: if isOwner(userId) && hasProfile(userId)
+            && exists(/databases/$(database)/documents/users/$(userId)/habits/$(habitId));
+        }
+      }
+
+      match /notes/{noteId} {
+        allow read: if isOwner(userId) && hasProfile(userId);
+        allow create: if isOwner(userId) && hasProfile(userId)
+          && validNote(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if isOwner(userId) && hasProfile(userId)
+          && validNote(request.resource.data)
+          && uidNotModified(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isOwner(userId) && hasProfile(userId);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

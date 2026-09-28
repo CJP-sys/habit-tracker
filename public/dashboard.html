@@ -1,20 +1,531 @@
-﻿<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="DailyHabits habit tracking dashboard"><title>Dashboard — DailyHabits</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/global.css"><link rel="stylesheet" href="css/dashboard.css"><link rel="stylesheet" href="css/responsive.css"></head>
-<body class="dashboard-page"><a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-loading" id="app-loading" role="status" aria-live="polite"><span class="loading-mark">D</span><div><b>Loading your habits</b><p>Syncing your latest progress…</p></div></div>
-<header class="app-header"><button class="icon-button mobile-menu" id="menu-toggle" aria-label="Open navigation" aria-expanded="false">☰</button><a class="brand" href="index.html"><span class="brand-mark">D</span><span>DailyHabits</span></a><div class="demo-badge"><i></i>Demo mode</div><div class="app-header-actions"><button class="icon-button theme-toggle" aria-label="Change theme">☼</button><button class="avatar-button" id="profile-button" aria-label="Open settings">AM</button></div></header>
-<div class="app-shell">
-<aside class="sidebar" id="sidebar"><nav aria-label="Dashboard navigation"><p class="nav-label">Workspace</p><button class="nav-item active" data-view="today"><span>⌂</span>Today</button><button class="nav-item" data-view="habits"><span>✓</span>My habits <b id="nav-habit-count">4</b></button><button class="nav-item" data-view="calendar"><span>▦</span>Calendar</button><button class="nav-item" data-view="analytics"><span>⌁</span>Analytics</button><button class="nav-item" data-view="notes"><span>✎</span>Notes</button><p class="nav-label">Account</p><button class="nav-item" data-view="settings"><span>⚙</span>Settings</button></nav><div class="sidebar-card"><span>↗</span><b>Keep the momentum</b><p>You are showing up. One small win is enough for today.</p></div><a class="nav-item logout-link" href="index.html"><span>↪</span>Exit demo</a></aside>
-<main id="main-content" class="main-content">
-<section class="app-view active" id="view-today" data-title="Today"><div class="page-heading"><div><p class="date-label" id="today-date"></p><h1>Good <span id="day-period">morning</span>, Alex <span class="wave">👋</span></h1><p>Here’s how your routines are shaping up today.</p></div><button class="button button-primary open-habit-modal">＋ Add habit</button></div><div class="stats-grid" id="summary-stats"></div><div class="today-grid"><section class="panel"><div class="panel-header"><div><h2>Today’s habits</h2><p id="today-progress-label"></p></div><button class="text-button" data-go="habits">View all</button></div><div class="progress-track"><i id="today-progress-bar"></i></div><div id="today-habits" class="habit-list"></div></section><section class="panel weekly-panel"><div class="panel-header"><div><h2>This week</h2><p>Your completion pattern</p></div><span class="week-rate" id="week-rate"></span></div><div class="weekly-chart" id="weekly-chart"></div><div class="chart-legend"><span><i class="legend-complete"></i>Completed</span><span><i></i>Remaining</span></div></section></div><section class="panel insight-panel" id="insight-panel"></section></section>
-<section class="app-view" id="view-habits" data-title="My habits"><div class="page-heading"><div><p class="date-label">Your routines</p><h1>My habits</h1><p>Create, edit, archive, and review the routines that matter.</p></div><button class="button button-primary open-habit-modal">＋ Add habit</button></div><div class="filter-row"><div class="segmented"><button class="active" data-habit-filter="active">Active</button><button data-habit-filter="archived">Archived</button></div><span id="habit-list-count"></span></div><div class="habit-card-grid" id="habit-cards"></div></section>
-<section class="app-view" id="view-calendar" data-title="Calendar"><div class="page-heading"><div><p class="date-label">Completion history</p><h1>Habit calendar</h1><p>Review each day without losing sight of the bigger picture.</p></div></div><section class="panel calendar-panel"><div class="calendar-toolbar"><button class="icon-button" id="prev-month" aria-label="Previous month">‹</button><h2 id="calendar-title"></h2><button class="icon-button" id="next-month" aria-label="Next month">›</button><button class="button button-secondary" id="calendar-today">Today</button></div><div class="calendar-scroll"><div class="habit-calendar" id="habit-calendar"></div></div><p class="calendar-help">Select today or an earlier date to update a completion. Future dates are locked.</p></section></section>
-<section class="app-view" id="view-analytics" data-title="Analytics"><div class="page-heading"><div><p class="date-label">Trends and insights</p><h1>Analytics</h1><p>Useful patterns from your actual completion history.</p></div></div><div class="analytics-summary" id="analytics-summary"></div><div class="analytics-grid"><section class="panel"><div class="panel-header"><div><h2>Last 7 days</h2><p>Overall completion rate</p></div></div><div class="large-chart" id="analytics-week-chart"></div></section><section class="panel"><div class="panel-header"><div><h2>Habit consistency</h2><p>Last 30 days</p></div></div><div id="habit-rates" class="rate-list"></div></section></div></section>
-<section class="app-view" id="view-notes" data-title="Notes"><div class="page-heading"><div><p class="date-label">Reflection</p><h1>Daily notes</h1><p>Capture the context behind your progress.</p></div><button class="button button-primary" id="open-note-modal">＋ Add note</button></div><div class="notes-toolbar"><label class="search-field"><span>⌕</span><input id="note-search" type="search" placeholder="Search notes" aria-label="Search notes"></label></div><div class="notes-list" id="notes-list"></div></section>
-<section class="app-view" id="view-settings" data-title="Settings"><div class="page-heading"><div><p class="date-label">Account</p><h1>Settings</h1><p>Personalize how DailyHabits works for you.</p></div></div><div class="settings-stack"><section class="panel settings-section"><div><h2>Profile</h2><p>Your display details.</p></div><div class="settings-form"><div class="field"><label for="profile-name">Name</label><input id="profile-name" value="Alex Morgan" maxlength="60"></div><div class="field"><label for="profile-email">Email</label><input id="profile-email" value="demo@dailyhabits.app" disabled><small>Your verified account email is managed securely.</small></div><button class="button button-primary" id="save-profile">Save profile</button></div></section><section class="panel settings-section"><div><h2>Appearance</h2><p>Choose the theme that feels right.</p></div><div class="settings-form"><div class="field"><label for="theme-select">Theme</label><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div><div class="field"><label for="week-select">Start week on</label><select id="week-select"><option value="monday">Monday</option><option value="sunday">Sunday</option></select></div></div></section><section class="panel settings-section danger-zone" id="demo-reset-section"><div><h2>Demo data</h2><p>Reset all demo habits and notes to their original sample state.</p></div><button class="button button-secondary" id="reset-demo">Reset demo data</button></section><section class="firebase-handoff"><span>PRIVATE BY DEFAULT</span><h2>Your account data is synced securely.</h2><p>Habits, completions, notes, and preferences are stored under your authenticated account and are not shared with other users.</p></section></div></section>
-</main></div>
-<div class="mobile-bottom-nav" aria-label="Mobile navigation"><button class="active" data-view="today"><span>⌂</span>Today</button><button data-view="habits"><span>✓</span>Habits</button><button data-view="calendar"><span>▦</span>Calendar</button><button data-view="analytics"><span>⌁</span>Insights</button></div>
-<div class="modal-backdrop" id="habit-modal" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="habit-modal-title"><div class="dialog-header"><div><p class="date-label">Routine details</p><h2 id="habit-modal-title">Create a habit</h2></div><button class="icon-button modal-close" aria-label="Close dialog">×</button></div><form id="habit-form"><div class="dialog-body"><input type="hidden" id="habit-id"><div class="field"><label for="habit-name">Habit name</label><input id="habit-name" maxlength="50" required placeholder="e.g. Read 20 pages"><span class="field-error" id="habit-name-error"></span></div><div class="form-grid"><div class="field"><label for="habit-icon">Icon</label><select id="habit-icon"><option>💻</option><option>📚</option><option>🏃</option><option>💧</option><option>🧘</option><option>✍️</option><option>🎯</option></select></div><div class="field"><label for="habit-category">Category</label><select id="habit-category"><option>Coding</option><option>Study</option><option>Fitness</option><option>Health</option><option>Productivity</option><option>Personal</option><option>Other</option></select></div><div class="field"><label for="habit-color">Color</label><input id="habit-color" type="color" value="#347958"></div><div class="field"><label for="habit-frequency">Frequency</label><select id="habit-frequency"><option value="daily">Every day</option><option value="weekdays">Weekdays</option></select></div><div class="field"><label for="habit-start">Start date</label><input id="habit-start" type="date" required></div><div class="field"><label for="habit-goal">Optional goal</label><input id="habit-goal" type="number" min="1" max="365" placeholder="30 days"></div></div></div><div class="dialog-actions"><button class="button button-secondary modal-close" type="button">Cancel</button><button class="button button-primary" type="submit">Save habit</button></div></form></div></div>
-<div class="modal-backdrop" id="note-modal" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="note-modal-title"><div class="dialog-header"><h2 id="note-modal-title">Add a note</h2><button class="icon-button modal-close" aria-label="Close dialog">×</button></div><form id="note-form"><div class="dialog-body"><input type="hidden" id="note-id"><div class="field"><label for="note-date">Date</label><input type="date" id="note-date" required></div><div class="field"><label for="note-text">Reflection</label><textarea id="note-text" maxlength="500" required placeholder="What helped today? What would you change tomorrow?"></textarea><span class="field-error" id="note-error"></span></div></div><div class="dialog-actions"><button class="button button-secondary modal-close" type="button">Cancel</button><button class="button button-primary" type="submit">Save note</button></div></form></div></div>
-<div class="modal-backdrop" id="confirm-modal" hidden><div class="dialog confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title"><div class="dialog-body"><span class="danger-icon">!</span><h2 id="confirm-title">Delete habit?</h2><p id="confirm-message">This action cannot be undone.</p></div><div class="dialog-actions"><button class="button button-secondary modal-close" type="button">Cancel</button><button class="button danger-button" id="confirm-action" type="button">Delete</button></div></div></div>
-<div class="modal-backdrop" id="onboarding-modal" hidden><div class="dialog onboarding-dialog" role="dialog" aria-modal="true" aria-labelledby="onboarding-title"><div class="onboarding-hero"><span class="onboarding-mark">D</span><p class="date-label">Welcome to DailyHabits</p><h2 id="onboarding-title">Start with one habit that feels easy.</h2><p>Momentum comes from repeating something small. Pick a starter below or create your own.</p></div><div class="starter-grid"><button class="starter-card" data-starter="coding"><span>💻</span><b>Code for 30 minutes</b><small>Weekdays · Coding</small></button><button class="starter-card" data-starter="reading"><span>📚</span><b>Read 10 pages</b><small>Every day · Study</small></button><button class="starter-card" data-starter="movement"><span>🏃</span><b>Take a morning walk</b><small>Weekdays · Fitness</small></button><button class="starter-card" data-starter="water"><span>💧</span><b>Drink 8 glasses</b><small>Every day · Health</small></button></div><div class="dialog-actions"><button class="button button-secondary" id="onboarding-custom" type="button">Create my own</button><button class="text-button" id="onboarding-skip" type="button">I’ll explore first</button></div></div></div>
-<div class="toast-region" aria-live="polite"></div><script type="module" src="js/dashboard.js"></script></body></html>
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="DailyHabits habit tracking dashboard" />
+    <title>Dashboard — DailyHabits</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+  </head>
+  <body class="dashboard-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-loading" id="app-loading" role="status" aria-live="polite">
+      <span class="loading-mark">D</span>
+      <div>
+        <b>Loading your habits</b>
+        <p>Syncing your latest progress…</p>
+      </div>
+    </div>
+    <header class="app-header">
+      <button
+        class="icon-button mobile-menu"
+        id="menu-toggle"
+        aria-label="Open navigation"
+        aria-expanded="false"
+      >
+        ☰</button
+      ><a class="brand" href="index.html"
+        ><span class="brand-mark">D</span><span>DailyHabits</span></a
+      >
+      <div class="demo-badge"><i></i>Demo mode</div>
+      <div class="app-header-actions">
+        <button class="icon-button theme-toggle" aria-label="Change theme">
+          ☼</button
+        ><button
+          class="avatar-button"
+          id="profile-button"
+          aria-label="Open settings"
+        >
+          AM
+        </button>
+      </div>
+    </header>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <nav aria-label="Dashboard navigation">
+          <p class="nav-label">Workspace</p>
+          <button class="nav-item active" data-view="today">
+            <span>⌂</span>Today</button
+          ><button class="nav-item" data-view="habits">
+            <span>✓</span>My habits <b id="nav-habit-count">4</b></button
+          ><button class="nav-item" data-view="calendar">
+            <span>▦</span>Calendar</button
+          ><button class="nav-item" data-view="analytics">
+            <span>⌁</span>Analytics</button
+          ><button class="nav-item" data-view="notes">
+            <span>✎</span>Notes
+          </button>
+          <p class="nav-label">Account</p>
+          <button class="nav-item" data-view="settings">
+            <span>⚙</span>Settings
+          </button>
+        </nav>
+        <div class="sidebar-card">
+          <span>↗</span><b>Keep the momentum</b>
+          <p>You are showing up. One small win is enough for today.</p>
+        </div>
+        <a class="nav-item logout-link" href="index.html"
+          ><span>↪</span>Exit demo</a
+        >
+      </aside>
+      <main id="main-content" class="main-content">
+        <section class="app-view active" id="view-today" data-title="Today">
+          <div class="page-heading">
+            <div>
+              <p class="date-label" id="today-date"></p>
+              <h1>
+                Good <span id="day-period">morning</span>, Alex
+                <span class="wave">👋</span>
+              </h1>
+              <p>Here’s how your routines are shaping up today.</p>
+            </div>
+            <button class="button button-primary open-habit-modal">
+              ＋ Add habit
+            </button>
+          </div>
+          <div class="stats-grid" id="summary-stats"></div>
+          <div class="today-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Today’s habits</h2>
+                  <p id="today-progress-label"></p>
+                </div>
+                <button class="text-button" data-go="habits">View all</button>
+              </div>
+              <div class="progress-track"><i id="today-progress-bar"></i></div>
+              <div id="today-habits" class="habit-list"></div>
+            </section>
+            <section class="panel weekly-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>This week</h2>
+                  <p>Your completion pattern</p>
+                </div>
+                <span class="week-rate" id="week-rate"></span>
+              </div>
+              <div class="weekly-chart" id="weekly-chart"></div>
+              <div class="chart-legend">
+                <span><i class="legend-complete"></i>Completed</span
+                ><span><i></i>Remaining</span>
+              </div>
+            </section>
+          </div>
+          <section class="panel insight-panel" id="insight-panel"></section>
+        </section>
+        <section class="app-view" id="view-habits" data-title="My habits">
+          <div class="page-heading">
+            <div>
+              <p class="date-label">Your routines</p>
+              <h1>My habits</h1>
+              <p>Create, edit, archive, and review the routines that matter.</p>
+            </div>
+            <button class="button button-primary open-habit-modal">
+              ＋ Add habit
+            </button>
+          </div>
+          <div class="filter-row">
+            <div class="segmented">
+              <button class="active" data-habit-filter="active">Active</button
+              ><button data-habit-filter="archived">Archived</button>
+            </div>
+            <span id="habit-list-count"></span>
+          </div>
+          <div class="habit-card-grid" id="habit-cards"></div>
+        </section>
+        <section class="app-view" id="view-calendar" data-title="Calendar">
+          <div class="page-heading">
+            <div>
+              <p class="date-label">Completion history</p>
+              <h1>Habit calendar</h1>
+              <p>Review each day without losing sight of the bigger picture.</p>
+            </div>
+          </div>
+          <section class="panel calendar-panel">
+            <div class="calendar-toolbar">
+              <button
+                class="icon-button"
+                id="prev-month"
+                aria-label="Previous month"
+              >
+                ‹
+              </button>
+              <h2 id="calendar-title"></h2>
+              <button
+                class="icon-button"
+                id="next-month"
+                aria-label="Next month"
+              >
+                ›</button
+              ><button class="button button-secondary" id="calendar-today">
+                Today
+              </button>
+            </div>
+            <div class="calendar-scroll">
+              <div class="habit-calendar" id="habit-calendar"></div>
+            </div>
+            <p class="calendar-help">
+              Select today or an earlier date to update a completion. Future
+              dates are locked.
+            </p>
+          </section>
+        </section>
+        <section class="app-view" id="view-analytics" data-title="Analytics">
+          <div class="page-heading">
+            <div>
+              <p class="date-label">Trends and insights</p>
+              <h1>Analytics</h1>
+              <p>Useful patterns from your actual completion history.</p>
+            </div>
+          </div>
+          <div class="analytics-summary" id="analytics-summary"></div>
+          <div class="analytics-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Last 7 days</h2>
+                  <p>Overall completion rate</p>
+                </div>
+              </div>
+              <div class="large-chart" id="analytics-week-chart"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Habit consistency</h2>
+                  <p>Last 30 days</p>
+                </div>
+              </div>
+              <div id="habit-rates" class="rate-list"></div>
+            </section>
+          </div>
+        </section>
+        <section class="app-view" id="view-notes" data-title="Notes">
+          <div class="page-heading">
+            <div>
+              <p class="date-label">Reflection</p>
+              <h1>Daily notes</h1>
+              <p>Capture the context behind your progress.</p>
+            </div>
+            <button class="button button-primary" id="open-note-modal">
+              ＋ Add note
+            </button>
+          </div>
+          <div class="notes-toolbar">
+            <label class="search-field"
+              ><span>⌕</span
+              ><input
+                id="note-search"
+                type="search"
+                placeholder="Search notes"
+                aria-label="Search notes"
+            /></label>
+          </div>
+          <div class="notes-list" id="notes-list"></div>
+        </section>
+        <section class="app-view" id="view-settings" data-title="Settings">
+          <div class="page-heading">
+            <div>
+              <p class="date-label">Account</p>
+              <h1>Settings</h1>
+              <p>Personalize how DailyHabits works for you.</p>
+            </div>
+          </div>
+          <div class="settings-stack">
+            <section class="panel settings-section">
+              <div>
+                <h2>Profile</h2>
+                <p>Your display details.</p>
+              </div>
+              <div class="settings-form">
+                <div class="field">
+                  <label for="profile-name">Name</label
+                  ><input
+                    id="profile-name"
+                    value="Alex Morgan"
+                    maxlength="60"
+                  />
+                </div>
+                <div class="field">
+                  <label for="profile-email">Email</label
+                  ><input
+                    id="profile-email"
+                    value="demo@dailyhabits.app"
+                    disabled
+                  /><small
+                    >Your verified account email is managed securely.</small
+                  >
+                </div>
+                <button class="button button-primary" id="save-profile">
+                  Save profile
+                </button>
+              </div>
+            </section>
+            <section class="panel settings-section">
+              <div>
+                <h2>Appearance</h2>
+                <p>Choose the theme that feels right.</p>
+              </div>
+              <div class="settings-form">
+                <div class="field">
+                  <label for="theme-select">Theme</label
+                  ><select id="theme-select">
+                    <option value="system">System</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="week-select">Start week on</label
+                  ><select id="week-select">
+                    <option value="monday">Monday</option>
+                    <option value="sunday">Sunday</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+            <section
+              class="panel settings-section danger-zone"
+              id="demo-reset-section"
+            >
+              <div>
+                <h2>Demo data</h2>
+                <p>
+                  Reset all demo habits and notes to their original sample
+                  state.
+                </p>
+              </div>
+              <button class="button button-secondary" id="reset-demo">
+                Reset demo data
+              </button>
+            </section>
+            <section class="firebase-handoff">
+              <span>PRIVATE BY DEFAULT</span>
+              <h2>Your account data is synced securely.</h2>
+              <p>
+                Habits, completions, notes, and preferences are stored under
+                your authenticated account and are not shared with other users.
+              </p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <button class="active" data-view="today"><span>⌂</span>Today</button
+      ><button data-view="habits"><span>✓</span>Habits</button
+      ><button data-view="calendar"><span>▦</span>Calendar</button
+      ><button data-view="analytics"><span>⌁</span>Insights</button>
+    </div>
+    <div class="modal-backdrop" id="habit-modal" hidden>
+      <div
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="habit-modal-title"
+      >
+        <div class="dialog-header">
+          <div>
+            <p class="date-label">Routine details</p>
+            <h2 id="habit-modal-title">Create a habit</h2>
+          </div>
+          <button class="icon-button modal-close" aria-label="Close dialog">
+            ×
+          </button>
+        </div>
+        <form id="habit-form">
+          <div class="dialog-body">
+            <input type="hidden" id="habit-id" />
+            <div class="field">
+              <label for="habit-name">Habit name</label
+              ><input
+                id="habit-name"
+                maxlength="50"
+                required
+                placeholder="e.g. Read 20 pages"
+              /><span class="field-error" id="habit-name-error"></span>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="habit-icon">Icon</label
+                ><select id="habit-icon">
+                  <option>💻</option>
+                  <option>📚</option>
+                  <option>🏃</option>
+                  <option>💧</option>
+                  <option>🧘</option>
+                  <option>✍️</option>
+                  <option>🎯</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="habit-category">Category</label
+                ><select id="habit-category">
+                  <option>Coding</option>
+                  <option>Study</option>
+                  <option>Fitness</option>
+                  <option>Health</option>
+                  <option>Productivity</option>
+                  <option>Personal</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="habit-color">Color</label
+                ><input id="habit-color" type="color" value="#347958" />
+              </div>
+              <div class="field">
+                <label for="habit-frequency">Frequency</label
+                ><select id="habit-frequency">
+                  <option value="daily">Every day</option>
+                  <option value="weekdays">Weekdays</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="habit-start">Start date</label
+                ><input id="habit-start" type="date" required />
+              </div>
+              <div class="field">
+                <label for="habit-goal">Optional goal</label
+                ><input
+                  id="habit-goal"
+                  type="number"
+                  min="1"
+                  max="365"
+                  placeholder="30 days"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="dialog-actions">
+            <button class="button button-secondary modal-close" type="button">
+              Cancel</button
+            ><button class="button button-primary" type="submit">
+              Save habit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal-backdrop" id="note-modal" hidden>
+      <div
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="note-modal-title"
+      >
+        <div class="dialog-header">
+          <h2 id="note-modal-title">Add a note</h2>
+          <button class="icon-button modal-close" aria-label="Close dialog">
+            ×
+          </button>
+        </div>
+        <form id="note-form">
+          <div class="dialog-body">
+            <input type="hidden" id="note-id" />
+            <div class="field">
+              <label for="note-date">Date</label
+              ><input type="date" id="note-date" required />
+            </div>
+            <div class="field">
+              <label for="note-text">Reflection</label
+              ><textarea
+                id="note-text"
+                maxlength="500"
+                required
+                placeholder="What helped today? What would you change tomorrow?"
+              ></textarea
+              ><span class="field-error" id="note-error"></span>
+            </div>
+          </div>
+          <div class="dialog-actions">
+            <button class="button button-secondary modal-close" type="button">
+              Cancel</button
+            ><button class="button button-primary" type="submit">
+              Save note
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal-backdrop" id="confirm-modal" hidden>
+      <div
+        class="dialog confirm-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+      >
+        <div class="dialog-body">
+          <span class="danger-icon">!</span>
+          <h2 id="confirm-title">Delete habit?</h2>
+          <p id="confirm-message">This action cannot be undone.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="button button-secondary modal-close" type="button">
+            Cancel</button
+          ><button
+            class="button danger-button"
+            id="confirm-action"
+            type="button"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop" id="onboarding-modal" hidden>
+      <div
+        class="dialog onboarding-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboarding-title"
+      >
+        <div class="onboarding-hero">
+          <span class="onboarding-mark">D</span>
+          <p class="date-label">Welcome to DailyHabits</p>
+          <h2 id="onboarding-title">Start with one habit that feels easy.</h2>
+          <p>
+            Momentum comes from repeating something small. Pick a starter below
+            or create your own.
+          </p>
+        </div>
+        <div class="starter-grid">
+          <button class="starter-card" data-starter="coding">
+            <span>💻</span><b>Code for 30 minutes</b
+            ><small>Weekdays · Coding</small></button
+          ><button class="starter-card" data-starter="reading">
+            <span>📚</span><b>Read 10 pages</b
+            ><small>Every day · Study</small></button
+          ><button class="starter-card" data-starter="movement">
+            <span>🏃</span><b>Take a morning walk</b
+            ><small>Weekdays · Fitness</small></button
+          ><button class="starter-card" data-starter="water">
+            <span>💧</span><b>Drink 8 glasses</b
+            ><small>Every day · Health</small>
+          </button>
+        </div>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            id="onboarding-custom"
+            type="button"
+          >
+            Create my own</button
+          ><button class="text-button" id="onboarding-skip" type="button">
+            I’ll explore first
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="toast-region" aria-live="polite"></div>
+    <script type="module" src="js/dashboard.js"></script>
+  </body>
+</html>

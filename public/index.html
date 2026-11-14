@@ -24,7 +24,16 @@
       <a class="brand" href="index.html" aria-label="DailyHabits home"
         ><span class="brand-mark">D</span><span>DailyHabits</span></a
       >
-      <nav class="desktop-nav" aria-label="Main navigation">
+      <button
+        class="icon-button mobile-nav-toggle"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="site-navigation"
+      >
+        <span aria-hidden="true">☰</span>
+      </button>
+      <nav class="desktop-nav" id="site-navigation" aria-label="Main navigation">
         <a href="#features">Features</a><a href="#how">How it works</a
         ><a href="#about">About</a>
       </nav>
@@ -78,7 +87,7 @@
             <aside class="preview-sidebar"><i></i><i></i><i></i><i></i></aside>
             <div class="preview-content">
               <div class="preview-greeting">
-                <small>MONDAY, AUG 12</small
+                <small>A SAMPLE DAY</small
                 ><strong>Good morning, Alex 👋</strong>
               </div>
               <div class="preview-stats">
@@ -89,7 +98,7 @@
                   <small>Completed</small><b>4 <em>/ 6</em></b>
                 </div>
                 <div>
-                  <small>Completion</small><b>82<em>%</em></b>
+                  <small>Completion</small><b>67<em>%</em></b>
                 </div>
               </div>
               <div class="preview-panel">
@@ -172,7 +181,7 @@
           <article class="feature-card">
             <span class="feature-icon">☁</span>
             <h3>Sync across devices</h3>
-            <p>Your habits will follow you once Firebase is connected.</p>
+            <p>Your account keeps habits and progress in sync across devices.</p>
           </article>
         </div>
       </section>

@@ -9,6 +9,9 @@
   opacity: 1;
   transform: none;
 }
+.mobile-nav-toggle {
+  display: none;
+}
 @media (max-width: 1050px) {
   .hero {
     grid-template-columns: 1fr;
@@ -64,6 +67,36 @@
   }
   .desktop-nav {
     display: none;
+  }
+  .mobile-nav-toggle {
+    display: grid;
+    margin-left: auto;
+    margin-right: 0.65rem;
+  }
+  .site-header {
+    position: relative;
+  }
+  .site-header .desktop-nav.open {
+    position: absolute;
+    z-index: 100;
+    top: calc(100% - 0.15rem);
+    left: 0;
+    right: 0;
+    display: grid;
+    gap: 0;
+    padding: 0.45rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  .site-header .desktop-nav.open a {
+    padding: 0.8rem 0.9rem;
+    border-radius: 9px;
+  }
+  .site-header .desktop-nav.open a:hover {
+    background: var(--surface-2);
   }
   .hide-mobile {
     display: none;
@@ -236,8 +269,28 @@
   .header-actions .button {
     padding: 0.55rem 0.75rem;
   }
+  .header-actions {
+    gap: 0.4rem;
+  }
+  .mobile-nav-toggle,
   .theme-toggle {
-    display: none;
+    width: 40px;
+    height: 40px;
+    margin-right: 0;
+    flex: 0 0 auto;
+  }
+  .site-header .brand {
+    gap: 0.45rem;
+    font-size: 1rem;
+  }
+  .site-header .brand-mark {
+    width: 31px;
+    height: 31px;
+  }
+  .header-actions .button {
+    min-height: 40px;
+    padding-inline: 0.65rem;
+    font-size: 0.82rem;
   }
   .hero-copy {
     text-align: left;
